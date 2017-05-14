@@ -7,4 +7,7 @@ COPY . /go/src/github.com/leopoldodonnell/demo-controller
 WORKDIR /go/src/github.com/leopoldodonnell/demo-controller
 RUN go install
 
+# Clean up!
+WORKDIR /go
+RUN rm -rf /go/src/
 ENTRYPOINT [ "demo-controller" ]

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang/glog"
-	// "github.com/kubernetes/client-go/kubernetes"
 
 	controller "github.com/leopoldodonnell/demo-kubernetes-controller/pkg/demo-controller"
 	"k8s.io/client-go/kubernetes"

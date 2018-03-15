@@ -1,13 +1,19 @@
-FROM golang:1.8
+FROM golang:alpine3.7 as builder
 
 ENV GOPATH /go
 ENV PATH "$GOPATH/bin:$PATH"
 
-COPY . /go/src/github.com/leopoldodonnell/demo-controller
-WORKDIR /go/src/github.com/leopoldodonnell/demo-controller
+RUN apk --no-cache add git && \
+  go get -u github.com/golang/dep/cmd/dep
+
+WORKDIR /go/src/github.com/leopoldodonnell/demo-kubernetes-controller
+COPY . .
+RUN dep init && dep ensure
 RUN go install
 
-# Clean up!
-WORKDIR /go
-RUN rm -rf /go/src/
-ENTRYPOINT [ "demo-controller" ]
+FROM alpine:3.7
+
+WORKDIR /share
+COPY --from=builder /go/bin/demo-kubernetes-controller /usr/local/bin/demo-controller
+
+ENTRYPOINT [ "/usr/local/bin/demo-controller" ]

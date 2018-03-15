@@ -1,5 +1,4 @@
-
-package main
+package controller
 
 import (
 	"reflect"
@@ -12,10 +11,9 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-
 // Node Related Methods -------------------------------------------------------
 
-func (dc * DemoController) createNodeController() (controller *cache.Controller) {
+func (dc *DemoController) createNodeController() (controller *cache.Controller) {
 	watchlist := cache.NewListWatchFromClient(dc.clientset.Core().RESTClient(), "nodes", "",
 		fields.Everything())
 	_, controller = cache.NewInformer(
@@ -37,7 +35,7 @@ func (dc * DemoController) createNodeController() (controller *cache.Controller)
 	return controller
 }
 
-func (dc * DemoController) nodeAdded(obj *v1.Node) {
+func (dc *DemoController) nodeAdded(obj *v1.Node) {
 	glog.Infof("%s %s added", reflect.TypeOf(obj), obj.ObjectMeta.Name)
 
 	dc.Lock()
@@ -50,20 +48,20 @@ func (dc * DemoController) nodeAdded(obj *v1.Node) {
 	dc.Nodes[obj.ObjectMeta.Name] = obj
 	dc.Unlock()
 
-  // TODO: Add application specific logic here
+	// TODO: Add application specific logic here
 }
 
-func (dc * DemoController) nodeDeleted(obj *v1.Node) {
+func (dc *DemoController) nodeDeleted(obj *v1.Node) {
 	glog.Infof("%s %s deleted", reflect.TypeOf(obj), obj.ObjectMeta.Name)
 	glog.Flush()
 	dc.Lock()
 	delete(dc.Nodes, obj.ObjectMeta.Name)
 	dc.Unlock()
 
-  // TODO: Add application specific logic here
+	// TODO: Add application specific logic here
 }
 
-func (dc * DemoController) nodeUpdated(oldObj *v1.Node, newObj *v1.Node) {
+func (dc *DemoController) nodeUpdated(oldObj *v1.Node, newObj *v1.Node) {
 	glog.Infof("%s %s updated", reflect.TypeOf(newObj), newObj.ObjectMeta.Name)
 	glog.Flush()
 	// TODO Handle changes to Node readiness
@@ -78,7 +76,7 @@ func (dc * DemoController) nodeUpdated(oldObj *v1.Node, newObj *v1.Node) {
 		return
 	}
 
-  // TODO: Add application specific logic here
+	// TODO: Add application specific logic here
 }
 
 // Return true iff the Node is in the NodeReady state

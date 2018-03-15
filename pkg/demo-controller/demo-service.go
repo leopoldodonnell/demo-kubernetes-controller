@@ -1,5 +1,4 @@
-
-package main
+package controller
 
 import (
 	"reflect"
@@ -12,15 +11,15 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-
 // Service Related Methods ----------------------------------------------------
 
 // Services are stored as <namespace>-<servicename> to avoid collision between namespaces
+
 func ServiceHash(obj *v1.Service) string {
 	return obj.ObjectMeta.Namespace + "-" + obj.ObjectMeta.Name
 }
 
-func (dc * DemoController) createServiceController(namespace string) (controller *cache.Controller) {
+func (dc *DemoController) createServiceController(namespace string) (controller *cache.Controller) {
 	watchlist := cache.NewListWatchFromClient(dc.clientset.CoreV1().RESTClient(), "services", namespace, fields.Everything())
 	_, controller = cache.NewInformer(
 		watchlist,
@@ -41,7 +40,7 @@ func (dc * DemoController) createServiceController(namespace string) (controller
 	return controller
 }
 
-func (dc * DemoController) serviceAdded(obj *v1.Service) {
+func (dc *DemoController) serviceAdded(obj *v1.Service) {
 	glog.Infof("%s %s added", reflect.TypeOf(obj), obj.ObjectMeta.Name)
 
 	// Always add a Service if it isn't in the list, but do no processing if
@@ -66,10 +65,10 @@ func (dc * DemoController) serviceAdded(obj *v1.Service) {
 	nodePorts := servicePorts(obj)
 	Debugf("Service %s has the following ports: %s", ServiceHash(obj), nodePorts)
 
-  // TODO: Add application specific logic here
+	// TODO: Add application specific logic here
 }
 
-func (dc * DemoController) serviceUpdated(oldObj *v1.Service, newObj *v1.Service) {
+func (dc *DemoController) serviceUpdated(oldObj *v1.Service, newObj *v1.Service) {
 	glog.Infof("%s %s updated", reflect.TypeOf(newObj), ServiceHash(newObj))
 	if !(hasNodePort(oldObj) || hasNodePort(newObj)) {
 		glog.Infof("Service %s has no nodeports -- Skipping Update", ServiceHash(newObj))
@@ -99,10 +98,10 @@ func (dc * DemoController) serviceUpdated(oldObj *v1.Service, newObj *v1.Service
 		Debugf("Service %s - the following ports were removed %s", ServiceHash(newObj), removedPorts)
 	}
 
-  // TODO: Add application specific logic here
+	// TODO: Add application specific logic here
 }
 
-func (dc * DemoController) serviceDeleted(obj *v1.Service) {
+func (dc *DemoController) serviceDeleted(obj *v1.Service) {
 	glog.Infof("%s %s deleted", reflect.TypeOf(obj), ServiceHash(obj))
 	if !hasNodePort(obj) {
 		glog.Infof("Service %s has no nodeports -- Skipping Update", ServiceHash(obj))
@@ -115,7 +114,7 @@ func (dc * DemoController) serviceDeleted(obj *v1.Service) {
 	delete(dc.Services, ServiceHash(obj))
 	dc.Unlock()
 
-  // TODO: Add application specific logic here
+	// TODO: Add application specific logic here
 }
 
 func hasNodePort(svc *v1.Service) bool {

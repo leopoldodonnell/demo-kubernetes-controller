@@ -1,5 +1,4 @@
-
-package main
+package controller
 
 import (
 	"reflect"
@@ -14,7 +13,7 @@ import (
 
 // Namespace Related Methods --------------------------------------------------
 
-func (dc * DemoController) createNamespaceController() (controller *cache.Controller) {
+func (dc *DemoController) createNamespaceController() (controller *cache.Controller) {
 	watchlist := cache.NewListWatchFromClient(dc.clientset.Core().RESTClient(), "namespaces", "", fields.Everything())
 	_, controller = cache.NewInformer(
 		watchlist,
@@ -32,7 +31,7 @@ func (dc * DemoController) createNamespaceController() (controller *cache.Contro
 	return controller
 }
 
-func (dc * DemoController) namespaceAdded(obj *v1.Namespace) {
+func (dc *DemoController) namespaceAdded(obj *v1.Namespace) {
 	glog.Infof("%s %s added", reflect.TypeOf(obj), obj.ObjectMeta.Name)
 
 	dc.Lock()
@@ -55,7 +54,7 @@ func (dc * DemoController) namespaceAdded(obj *v1.Namespace) {
 	go controller.Run(dc.stop)
 }
 
-func (dc * DemoController) namespaceDeleted(obj *v1.Namespace) {
+func (dc *DemoController) namespaceDeleted(obj *v1.Namespace) {
 	glog.Infof("%s %s deleted", reflect.TypeOf(obj), obj.ObjectMeta.Name)
 	glog.Flush()
 	dc.Lock()
@@ -65,5 +64,5 @@ func (dc * DemoController) namespaceDeleted(obj *v1.Namespace) {
 	delete(dc.Namespaces, obj.ObjectMeta.Name)
 	dc.Unlock()
 
-  // TODO: Add application specific logic here
+	// TODO: Add application specific logic here
 }
